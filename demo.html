@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html ng-app="">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css"/>
+</head>
+<body>
+<div class="container" ng-controller="contrl">
+    <table class="table" ng-show="cart.length" >
+        <thead>
+        <tr>
+            <th>11111</th>
+            <th>22222</th>
+            <th>33333</th>
+            <th>44444</th>
+            <th>55555</th>
+            <th>66666</th>
+        </tr>
+        </thead>
+        <tbody>
+         <tr ng-repeat="item in cart">
+         <td>{{item.id}}</td>
+         <td>{{item.name}}</td>
+         <td>
+             <button type="button" ng-click="reduce(item.id)" class="btn btn-danger">-</button>
+             <input type="text" ng-model="item.quantity"/>
+             <button type="button" ng-click="add(item.id)" class="btn btn-danger">+</button>
+         </td>
+         <td>{{item.price}}</td>
+         <td>{{item.price*item.quantity}}</td>
+         <td>
+             <button class="btn btn-danger" type="button" ng-click="remove(item.id)">移除</button>
+         </td>
+         </tr>
+        <tr>
+            <td>
+                总购买价
+            </td>
+            <td>
+                {{totalprice()}}
+            </td>
+            <td>
+                总购买数量
+            </td>
+            <td>
+                {{totalquantity()}}
+            </td>
+            <td colspan="2">
+            <button class="btn btn-danger" ng-click="cart={}">清除购物车</button>
+            </td>
+
+        </tr>
+        </tbody>
+    </table>
+    <p ng-show="!cart.length">您的购物车为空</p>
+</div>
+<script src="../js/angularjs.js"></script>
+<script>
+    var contrl=function($scope){
+      $scope.cart=[
+          {
+              id:1000,
+               name:1111,
+              quantity:30,
+              price:3000
+          },
+          {
+              id:2000,
+              name:1111,
+              quantity:30,
+              price:3000
+          },
+          {
+              id:3000,
+              name:1111,
+              quantity:30,
+              price:3000
+          },
+          {
+              id:4000,
+              name:1111,
+              quantity:30,
+              price:3000
+          }
+      ]
+       /* 总价格*/
+        $scope.totalprice=function(){
+            var total=0;
+            angular.forEach($scope.cart,function(item){
+                total+=item.quantity*item.price;
+            })
+            return total;
+        }
+       /* 总数量*/
+        $scope.totalquantity=function(){
+            var total=0;
+            angular.forEach($scope.cart,function(item){
+                total+=parseInt(item.quantity);
+            })
+            return total;
+        }
+        //找到元素的索引
+        var findindex=function(id){
+          var index=-1;
+            angular.forEach($scope.cart,function(item,key) {
+                if (item.id === id) {
+                    index = key;
+                    return;
+                }
+            })
+                return index;
+        }
+        /*添加数量*/
+            $scope.add=function(id){
+                var index=findindex(id);
+                if(index!==-1) {
+                    ++$scope.cart[index].quantity;
+                }
+            }
+        /* 移除*/
+        $scope.remove= function(id) {
+            var index = findindex(id);
+            if (index !== -1) {
+                $scope.cart.splice(index, 1)
+            }
+        }
+        /*减少数量*/
+        $scope.reduce=function(id){
+            var index=findindex(id);
+            if(index!=-1){
+                var item=$scope.cart[index];
+                if(item.quantity>1){
+                    --item.quantity;
+                }else{
+                    var returnkey=confirm("是否删除")
+                    if(returnkey){
+                        $scope.remove(id)
+                    }
+                }
+            }
+        }
+        $scope.$watch("cart",function(newvalue,oldvalue){
+            angular.forEach(newvalue,function(item,key){
+                if(item.quantity < 1){
+                    var returnKey = confirm('是否删除');
+                    if(returnKey){
+                        $scope.remove(item.id);
+                    }else{
+                        item.quantity = oldvalue[key].quantity;
+                    }
+                }
+            })
+        },true)
+    }
+</script>
+</body>
+</html>
